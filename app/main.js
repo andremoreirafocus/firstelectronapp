@@ -56,7 +56,34 @@ exports.saveMarkDown = (file, content) => {
   mainWindow.webContents.send('file-saved', file, content);
 };
 
-const openFile = (file) => {
+exports.saveHTML = (file, content) => {
+
+  if (file)
+    file = `${file.split('.')[0]}.html`;
+
+  if (!file) {
+    file = dialog.showSaveDialog({
+      title: 'Save HTML',
+      defaultPath: app.getPath('desktop'),
+      filters: [
+        { name: 'HTML files', extensions: ['htm', 'html']}
+      ]
+    });
+  }
+
+  if (!file) {
+    return;
+  }
+
+  fs.writeFileSync(file, content);
+  console.log({file});
+  file = `${file.split('.')[0]}.md`;
+  console.log({file});
+  mainWindow.webContents.send('file-saved', file, content);
+};
+
+exports.openFile = (file) => {
+  console.log('file to open: ', file);
   const content = fs.readFileSync(file).toString();
   app.addRecentDocument(file); // nao funcionou
   mainWindow.webContents.send('file-opened', file, content);
