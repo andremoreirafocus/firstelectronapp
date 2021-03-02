@@ -182,6 +182,12 @@ markdownView.addEventListener('drop', (ev) => {
     content = mainProcess.openFile(file.path);
     console.log(content);  
   }
+  else {
+    if (fileType === '')
+      alert(`ERROR: file type not identified!!!`);
+    else
+      alert(`ERROR: file type ${fileType} is not supported!!!`);
+  }
 });
 
 
