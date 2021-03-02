@@ -9,6 +9,8 @@ app.on('ready', () => {
   mainWindow.loadFile(`${__dirname}/index.html`);
 
   // getFileFromUser();
+  Menu.setApplicationMenu(applicationMenu);
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
@@ -78,7 +80,7 @@ exports.saveHTML = (file, content) => {
   fs.writeFileSync(file, content);
   console.log({file});
   file = `${file.split('.')[0]}.md`;
-  console.log({file});
+  // console.log({file});
   mainWindow.webContents.send('file-saved-html', file, content);
 };
 
@@ -93,3 +95,68 @@ const openFile = (exports.openFile = (file) => {
   else 
     console.log('File not informed!!!');
 });
+
+const applicationName = 'Fire sale';
+
+const template = [ 
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Open File',
+        accelerator: 'CommandorControl+O',
+        click() {
+          // console.log('Open file');
+          exports.getFileFromUser();
+        }
+      },
+      {
+        label: 'Save File',
+        accelerator: 'CommandorControl+S',
+        click() {
+          // console.log('Open file');
+          mainWindow.webContents.send('save-markdown');
+        }
+      },
+      {
+        label: 'Save HTML',
+        accelerator: 'CommandorControl+Shift+S',
+        click() {
+          // console.log('Open file');
+          mainWindow.webContents.send('save-html');
+        }
+      },
+      {
+        label: `Quit ${applicationName}`,
+        role: 'quit'
+        // click() {
+        //   console.log('Quit application');
+        //   app.quit();
+        // }
+      },
+      {
+        label: `Copy`,
+        role: 'copy'
+        // click() {
+        //   console.log('Quit application');
+        //   app.quit();
+        // }
+      }
+
+    ]
+  },
+  {
+    label: 'About',
+    submenu: [
+      {
+        label: `About ${applicationName}`,
+        click() {
+          console.log('About application');
+        }
+      }
+    ]
+  }
+];
+
+const applicationMenu = Menu.buildFromTemplate(template);
+

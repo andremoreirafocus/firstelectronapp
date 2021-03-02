@@ -47,10 +47,16 @@ markdownView.addEventListener('keyup', event => {
   updateUserInterface(currentContent !== originalFileContent);
 });
 
-saveMarkdownButton.addEventListener('click', event => {
+const saveMarkDown = () => {
   mainProcess.saveMarkDown(filePath, markdownView.value);
   updateUserInterface(false);
+};
+
+saveMarkdownButton.addEventListener('click', event => {
+  saveMarkDown();
 });
+
+ipcRenderer.on('save-markdown', saveMarkDown);
 
 revertButton.addEventListener('click', event => {
   markdownView.value = originalFileContent;
@@ -58,10 +64,16 @@ revertButton.addEventListener('click', event => {
   updateUserInterface(false);
 });
 
-saveHtmlButton.addEventListener('click', event => {
+const saveHTML = () => {
   mainProcess.saveHTML(filePath, htmlView.innerHTML);
   updateUserInterface(false);
+};
+
+saveHtmlButton.addEventListener('click', event => {
+  saveHTML();
 });
+
+ipcRenderer.on('save-html', saveHTML);
 
 openFileButton.addEventListener('click', () => {
   // alert('Clicked the File Open button');
@@ -212,7 +224,6 @@ markdownView.addEventListener('drop', (ev) => {
       alert(`ERROR: file type ${fileType} is not supported!!!`);
   }
 });
-
 
 markdownView.addEventListener('dragleave', () => {
   markdownView.classList.remove('drag-over');
