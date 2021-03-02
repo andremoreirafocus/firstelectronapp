@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { app, BrowserWindow, dialog } = require ('electron');
+const { app, BrowserWindow, dialog, Menu } = require ('electron');
 
 let mainWindow = null;
 
@@ -25,7 +25,7 @@ exports.getFileFromUser = () => {
     ]
   });
   if (!files) 
-  return;
+    return;
   console.log(files);
   const file = files[0];
   openFile(file);
@@ -79,13 +79,17 @@ exports.saveHTML = (file, content) => {
   console.log({file});
   file = `${file.split('.')[0]}.md`;
   console.log({file});
-  mainWindow.webContents.send('file-saved', file, content);
+  mainWindow.webContents.send('file-saved-html', file, content);
 };
 
-exports.openFile = (file) => {
-  console.log('file to open: ', file);
-  const content = fs.readFileSync(file).toString();
-  app.addRecentDocument(file); // nao funcionou
-  mainWindow.webContents.send('file-opened', file, content);
-  // console.log(content);
-};
+const openFile = (exports.openFile = (file) => {
+  if (file) {
+    console.log('file to open: ', file);
+    const content = fs.readFileSync(file).toString();
+    app.addRecentDocument(file); // nao funcionou
+    mainWindow.webContents.send('file-opened', file, content);
+    console.log(content);
+  }
+  else 
+    console.log('File not informed!!!');
+});

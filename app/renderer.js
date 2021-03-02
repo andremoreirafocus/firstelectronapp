@@ -1,6 +1,6 @@
 const path = require('path');
 const marked = require('marked');
-const { remote, ipcRenderer, dialog } = require('electron');
+const { remote, ipcRenderer, shell } = require('electron');
 
 mainProcess = remote.require('./main');
 currentWindow = remote.getCurrentWindow();
@@ -35,6 +35,9 @@ const updateUserInterface = (isEdited) => {
   }
   saveMarkdownButton.disabled = !isEdited;
   revertButton.disabled = !isEdited;
+
+  showFileButton.disabled = !filePath;
+  openInDefaultButton.disabled = !filePath;
   currentWindow.setTitle(title);
 };
 
@@ -62,8 +65,21 @@ saveHtmlButton.addEventListener('click', event => {
 
 openFileButton.addEventListener('click', () => {
   // alert('Clicked the File Open button');
-  content = mainProcess.openFile();
+  // content = mainProcess.openFile();
+  content = mainProcess.getFileFromUser();
   console.log(content);
+});
+
+showFileButton.addEventListener('click', () => {
+  if (!filePath) 
+    return alert('No file to show!!!');
+  shell.showItemInFolder(filePath);
+});
+
+openInDefaultButton.addEventListener('click', () => {
+  if (!filePath) 
+    return alert('No file to open!!!');
+  shell.openExternal(filePath);
 });
 
 ipcRenderer.on('file-opened', (event, file, content) => {
@@ -79,6 +95,13 @@ ipcRenderer.on('file-opened', (event, file, content) => {
 ipcRenderer.on('file-saved', (event, file, content) => {
   originalFileContent = content;
   console.log('evento file-saved');
+  console.log({ file, content } );
+  filePath = file;
+  updateUserInterface();
+});
+
+ipcRenderer.on('file-saved-html', (event, file, content) => {
+  console.log('evento file-saved-html');
   console.log({ file, content } );
   filePath = file;
   updateUserInterface();
